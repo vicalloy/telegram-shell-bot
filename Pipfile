@@ -9,6 +9,3 @@ isort = "*"
 [packages]
 python-telegram-bot = "*"
 delegator-py = "*"
-
-[requires]
-python_version = "3.7"
