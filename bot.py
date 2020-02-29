@@ -36,7 +36,9 @@ def start(update, context):
         "/script run scripts in ./scripts directory\r\n"
         "/tasks show all running tasks\r\n"
         "/sudo_login call sudo\r\n"
-        "/kill kill running task"
+        "/kill kill running task\r\n"
+        "/pwd show current working directory"
+        "/ls list directory contents"
     )
 
 
@@ -72,13 +74,36 @@ def __do_exec(cmd, update, context, cwd=None):
         update.message.reply_text(f'Task finished: {cmd}')
 
 
+def __do_cd(cmd, update, context):
+    if not cmd.startswith('cd '):
+        return False
+    try:
+        os.chdir(cmd[3:])
+        update.message.reply_text(f'pwd: {os.getcwd()}')
+    except FileNotFoundError as e:
+        update.message.reply_text(f'{e}')
+    return True
+
+
 @run_async
 @restricted
 def do_exec(update, context):
     if not update.message:
         return
-    cmd = update.message.text
+    cmd: str = update.message.text
+    if __do_cd(cmd, update, context):
+        return
     __do_exec(cmd, update, context)
+
+
+@restricted
+def do_pwd(update, context):
+    __do_exec('pwd', update, context)
+
+
+@restricted
+def do_ls(update, context):
+    __do_exec('ls', update, context)
 
 
 @restricted
@@ -88,6 +113,7 @@ def do_tasks(update, context):
     update.message.reply_text(msg)
 
 
+@run_async
 @restricted
 def do_script(update, context):
     args = context.args.copy()
@@ -149,6 +175,8 @@ def main():
     dp.add_handler(CommandHandler("tasks", do_tasks, pass_user_data=True))
     dp.add_handler(CommandHandler("sudo_login", do_sudo_login, pass_args=True))
     dp.add_handler(CommandHandler("kill", do_kill, pass_args=True, pass_user_data=True))
+    dp.add_handler(CommandHandler("pwd", do_pwd))
+    dp.add_handler(CommandHandler("ls", do_ls))
     dp.add_handler(MessageHandler(Filters.text, do_exec, pass_user_data=True))
 
     dp.add_error_handler(error)
