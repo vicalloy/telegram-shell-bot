@@ -37,7 +37,7 @@ def start(update, context):
         "/tasks show all running tasks\r\n"
         "/sudo_login call sudo\r\n"
         "/kill kill running task\r\n"
-        "/pwd show current working directory"
+        "/pwd show current working directory\r\n"
         "/ls list directory contents"
     )
 
@@ -170,6 +170,7 @@ def main():
     # TODO cwd
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", start))
+    dp.add_handler(CommandHandler("?", start))
 
     dp.add_handler(CommandHandler("script", do_script, pass_args=True))
     dp.add_handler(CommandHandler("tasks", do_tasks, pass_user_data=True))
