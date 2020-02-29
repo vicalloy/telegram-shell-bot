@@ -16,10 +16,6 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-# https://github.com/python-telegram-bot/python-telegram-bot/wiki/Code-snippets
-
-# TODO auth delegator
-
 def restricted(func):
     @wraps(func)
     def wrapped(update, context, *args, **kwargs):
