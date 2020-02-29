@@ -60,13 +60,13 @@ def __do_exec(cmd, update, context, cwd=None):
     for line in c.subprocess:
         out += line
         cost_time = time.time() - start_time
-        if cost_time > 5:
+        if cost_time > 1:
             update.message.reply_text(out[:settings.MAX_TASK_OUTPUT])
             idx += 1
             out = ''
             start_time = time.time()
         if idx > 3:
-            print(f'Command not finished, you can kill by send /kill {c.pid}')
+            update.message.reply_text(f'Command not finished, you can kill by send /kill {c.pid}')
             break
     c.block()
     tasks.remove(task)
