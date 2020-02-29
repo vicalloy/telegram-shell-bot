@@ -1,0 +1,11 @@
+import os
+
+TOKEN = os.environ.get("TELEGRAM_API_TOKEN", '')
+
+ENABLED_USERS = os.environ.get("ENABLED_USERS", '')
+ENABLED_USERS = [e.strip() for e in ENABLED_USERS.split(',')]
+
+MAX_TASK_OUTPUT = int(os.environ.get("MAX_TASK_OUTPUT", 500))
+
+ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
+SCRIPTS_ROOT_PATH = os.path.join(ROOT_PATH, 'scripts')
