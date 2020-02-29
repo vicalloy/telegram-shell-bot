@@ -25,7 +25,7 @@ def restricted(func):
     def wrapped(update, context, *args, **kwargs):
         user_id = update.effective_user.id
         if user_id not in settings.ENABLED_USERS:
-            print("Unauthorized access denied for {}.".format(user_id))
+            print(f"Unauthorized access denied for {user_id}.")
             return
         return func(update, context, *args, **kwargs)
     return wrapped
@@ -53,7 +53,7 @@ def __do_exec(cmd, update, context, cwd=None):
     out = ''
     tasks = context.user_data.setdefault('tasks', set([]))
     task = (c.pid, cmd, c)
-    tasks.append(task)
+    tasks.add(task)
     start_time = time.time()
     idx = 0
     for line in c.subprocess:
