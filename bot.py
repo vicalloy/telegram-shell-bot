@@ -35,6 +35,7 @@ def restricted(func):
 def start(update, context):
     """Send a message when the command /help is issued."""
     update.message.reply_text(
+        "Any input text will call as shell commend.\r\n"
         "Support command:\r\n"
         "/script run scripts in ./scripts directory\r\n"
         "/tasks show all running tasks\r\n"
@@ -60,17 +61,17 @@ def __do_exec(cmd, update, context, cwd=None):
         out += line
         cost_time = time.time() - start_time
         if cost_time > 5:
-            update.message.reply_text(out[:-settings.MAX_TASK_OUTPUT])
+            update.message.reply_text(out[:settings.MAX_TASK_OUTPUT])
             idx += 1
             out = ''
             start_time = time.time()
         if idx > 3:
-            print('not finished, you can kill by send xxx')
+            print(f'Command not finished, you can kill by send /kill {c.pid}')
             break
     c.block()
     tasks.remove(task)
     if out:
-        update.message.reply_text(out[:-settings.MAX_TASK_OUTPUT])
+        update.message.reply_text(out[:settings.MAX_TASK_OUTPUT])
     if idx > 3:
         update.message.reply_text(f'Task finished: {cmd}')
 
