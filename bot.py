@@ -126,6 +126,10 @@ def do_kill(update, context):
 
 @restricted
 def do_sudo_login(update, context):
+    if not context.args:
+        update.message.reply_text('Usage: /sudo_login password')
+        return
+
     password = context.args[0]
     c = delegator.chain(f'echo "{password}" | sudo -S xxxvvv')
     out = c.out
