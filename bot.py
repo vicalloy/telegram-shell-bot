@@ -53,7 +53,7 @@ def __do_exec(cmd, update, context, cwd=None):
     c = delegator.run(cmd, block=False, cwd=cwd)
     out = ''
     tasks = context.user_data.setdefault('tasks', set([]))
-    task = (c.pid, cmd, c)
+    task = (f'{c.pid}', cmd, c)
     tasks.add(task)
     start_time = time.time()
     idx = 0
