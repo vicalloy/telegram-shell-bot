@@ -1,8 +1,8 @@
 pyenv:
 	#pip install pipenv --upgrade
 	#pipenv --python 3
-	pipenv shell
 	pipenv install -d --skip-lock
+	pipenv shell
 
 run:
 	python bot.py
