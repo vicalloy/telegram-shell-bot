@@ -79,7 +79,8 @@ def __do_exec(cmd, update, context, cwd=None):
 @run_async
 @restricted
 def do_exec(update, context):
-    """Add a job to the queue."""
+    if not update.message:
+        return
     cmd = update.message.text
     __do_exec(cmd, update, context)
 
