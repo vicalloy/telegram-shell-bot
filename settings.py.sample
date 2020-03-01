@@ -3,7 +3,7 @@ import os
 TOKEN = os.environ.get("TELEGRAM_API_TOKEN", '')
 
 ENABLED_USERS = os.environ.get("ENABLED_USERS", '')
-ENABLED_USERS = [e.strip() for e in ENABLED_USERS.split(',')]
+ENABLED_USERS = [int(e.strip()) for e in ENABLED_USERS.split(',')]
 
 MAX_TASK_OUTPUT = int(os.environ.get("MAX_TASK_OUTPUT", 500))
 
