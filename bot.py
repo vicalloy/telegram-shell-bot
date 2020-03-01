@@ -110,6 +110,8 @@ def do_ls(update, context):
 def do_tasks(update, context):
     tasks = context.user_data.get('tasks')
     msg = '\r\n'.join([', '.join(e[:2]) for e in tasks])
+    if not msg:
+        msg = "Task list is empty"
     update.message.reply_text(msg)
 
 
