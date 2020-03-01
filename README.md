@@ -1,4 +1,4 @@
-# [Telegram Shell Bot]
+# Telegram Shell Bot
 
 This is a [Telegram](http://telegram.org) Bot to run shell commands. 
 
