@@ -85,12 +85,26 @@ def __do_cd(cmd, update, context):
     return True
 
 
+def __check_cmd(cmd: str):
+    cmd = cmd.lower()
+    if cmd.startswith('sudo'):
+        cmd = cmd[4:].strip()
+    cmd = cmd.split(' ')[0]
+    if cmd in settings.CMD_BLACK_LIST:
+        return False
+    if settings.CMD_WHITE_LIST and cmd not in settings.CMD_WHITE_LIST:
+        return False
+    return True
+
+
 @run_async
 @restricted
 def do_exec(update, context):
     if not update.message:
         return
     cmd: str = update.message.text
+    if not __check_cmd():
+        return
     if __do_cd(cmd, update, context):
         return
     __do_exec(cmd, update, context)
