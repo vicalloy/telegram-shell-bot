@@ -101,6 +101,7 @@ def __check_cmd_chars(cmd: str):
     for char in settings.CMD_BLACK_CHARS:
         if char in cmd:
             return False
+    return True
 
 
 @run_async
