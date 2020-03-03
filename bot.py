@@ -48,6 +48,8 @@ def error(update, context):
 
 
 def __do_exec(cmd, update, context, cwd=None):
+    if not __check_cmd_chars(cmd):
+        return
     c = delegator.run(cmd, block=False, cwd=cwd)
     out = ''
     tasks = context.user_data.setdefault('tasks', set([]))
@@ -92,10 +94,13 @@ def __check_cmd(cmd: str):
     cmd = cmd.split(' ')[0]
     if cmd in settings.CMD_BLACK_LIST:
         return False
+    return True
+
+
+def __check_cmd_chars(cmd: str):
     for char in settings.CMD_BLACK_CHARS:
         if char in cmd:
             return False
-    return True
 
 
 @run_async
