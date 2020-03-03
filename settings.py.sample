@@ -7,6 +7,7 @@ ENABLED_USERS = set(int(e.strip()) for e in ENABLED_USERS.split(','))
 
 CMD_WHITE_LIST = {}
 CMD_BLACK_LIST = {'rm'}
+CMD_BLACK_CHARS = {';', '\n'}
 
 MAX_TASK_OUTPUT = int(os.environ.get("MAX_TASK_OUTPUT", 500))
 

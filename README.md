@@ -18,6 +18,7 @@ This is a [Telegram](http://telegram.org) Bot to run shell commands.
     - `ENABLED_USERS` Your telegram user id. Only enabled users can use this bot.  
     - `CMD_WHITE_LIST` Only command in `CMD_WHITE_LIST` can be execute. Let it empty if no restriction.
     - `CMD_BLACK_LIST` Ignore command in `CMD_BLACK_LIST`.
+    - `CMD_BLACK_CHARS` Ignore command contain char in `CMD_BLACK_LIST`.
 
 1. Create a virtual environment and install required packages
         
