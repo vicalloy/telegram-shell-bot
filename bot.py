@@ -76,7 +76,8 @@ def __do_exec(cmd, update, context, cwd=None):
         update.message.reply_text(f'Task finished: {cmd}')
 
 
-def __do_cd(cmd, update, context):
+def __do_cd(update, context):
+    cmd: str = update.message.text
     if not cmd.startswith('cd '):
         return False
     try:
@@ -109,10 +110,10 @@ def __check_cmd_chars(cmd: str):
 def do_exec(update, context):
     if not update.message:
         return
-    cmd: str = update.message.text
-    if not __check_cmd():
+    if __do_cd(update, context):
         return
-    if __do_cd(cmd, update, context):
+    cmd: str = update.message.text
+    if not __check_cmd(cmd):
         return
     __do_exec(cmd, update, context)
 
@@ -185,12 +186,13 @@ def do_sudo_login(update, context):
 
 
 def main():
-    updater = Updater(settings.TOKEN, use_context=True)
-    # check user name
+    updater = Updater(
+        settings.TOKEN, use_context=True,
+        request_kwargs=settings.REQUEST_KWARGS
+    )
 
     dp = updater.dispatcher
 
-    # TODO cwd
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", start))
 

@@ -11,5 +11,10 @@ CMD_BLACK_CHARS = {';', '\n'}
 
 MAX_TASK_OUTPUT = int(os.environ.get("MAX_TASK_OUTPUT", 500))
 
+PROXY_URL = os.environ.get("ALL_PROXY", '')
+REQUEST_KWARGS = {
+    'proxy_url': PROXY_URL
+}
+
 ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 SCRIPTS_ROOT_PATH = os.path.join(ROOT_PATH, 'scripts')
