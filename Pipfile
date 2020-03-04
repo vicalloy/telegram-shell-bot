@@ -9,3 +9,4 @@ isort = "*"
 [packages]
 python-telegram-bot = "*"
 delegator-py = "*"
+pysocks = "*"
