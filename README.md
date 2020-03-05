@@ -35,7 +35,7 @@ python bot.py
 
 ## Usage
 
-1. Take to bot, every input will tread as a shell commend.
+1. Take to bot, every input will tread as a shell command.
 1. `/pwd` show current working directory
 1. `/ls` list directory contents
 1. `/tasks` show all running tasks
