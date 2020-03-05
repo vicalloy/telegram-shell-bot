@@ -130,7 +130,7 @@ def do_ls(update, context):
 
 @restricted
 def do_tasks(update, context):
-    tasks = context.user_data.get('tasks')
+    tasks = context.user_data.get('tasks', [])
     msg = '\r\n'.join([', '.join(e[:2]) for e in tasks])
     if not msg:
         msg = "Task list is empty"
@@ -162,7 +162,7 @@ def do_kill(update, context):
         return
 
     pid = context.args[0]
-    tasks = context.user_data.get('tasks')
+    tasks = context.user_data.get('tasks', [])
     for task in tasks:
         if task[0] == pid:
             task[2].kill()
