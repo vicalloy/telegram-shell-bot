@@ -16,6 +16,9 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
+__tasks = []
+
+
 def restricted(func):
     @wraps(func)
     def wrapped(update, context, *args, **kwargs):
@@ -52,9 +55,8 @@ def __do_exec(cmd, update, context, cwd=None):
         return
     c = delegator.run(cmd, block=False, cwd=cwd)
     out = ''
-    tasks = context.user_data.setdefault('tasks', set([]))
     task = (f'{c.pid}', cmd, c)
-    tasks.add(task)
+    __tasks.add(task)
     start_time = time.time()
     idx = 0
     for line in c.subprocess:
@@ -69,7 +71,7 @@ def __do_exec(cmd, update, context, cwd=None):
             update.message.reply_text(f'Command not finished, you can kill by send /kill {c.pid}')
             break
     c.block()
-    tasks.remove(task)
+    __tasks.remove(task)
     if out:
         update.message.reply_text(out[:settings.MAX_TASK_OUTPUT])
     if idx > 3:
@@ -120,7 +122,6 @@ def do_exec(update, context):
 
 @restricted
 def do_pwd(update, context):
-    xx
     __do_exec('pwd', update, context)
 
 
@@ -131,8 +132,7 @@ def do_ls(update, context):
 
 @restricted
 def do_tasks(update, context):
-    tasks = context.user_data.get('tasks', [])
-    msg = '\r\n'.join([', '.join(e[:2]) for e in tasks])
+    msg = '\r\n'.join([', '.join(e[:2]) for e in __tasks])
     if not msg:
         msg = "Task list is empty"
     update.message.reply_text(msg)
@@ -163,8 +163,7 @@ def do_kill(update, context):
         return
 
     pid = context.args[0]
-    tasks = context.user_data.get('tasks', [])
-    for task in tasks:
+    for task in __tasks:
         if task[0] == pid:
             task[2].kill()
             update.message.reply_text(f'killed: {task[1]}')
@@ -198,9 +197,9 @@ def main():
     dp.add_handler(CommandHandler("help", start))
 
     dp.add_handler(CommandHandler("script", do_script, pass_args=True))
-    dp.add_handler(CommandHandler("tasks", do_tasks, pass_user_data=True))
+    dp.add_handler(CommandHandler("tasks", do_tasks))
     dp.add_handler(CommandHandler("sudo_login", do_sudo_login, pass_args=True))
-    dp.add_handler(CommandHandler("kill", do_kill, pass_args=True, pass_user_data=True))
+    dp.add_handler(CommandHandler("kill", do_kill, pass_args=True))
     dp.add_handler(CommandHandler("pwd", do_pwd))
     dp.add_handler(CommandHandler("ls", do_ls))
     dp.add_handler(MessageHandler(Filters.text, do_exec, pass_user_data=True))
