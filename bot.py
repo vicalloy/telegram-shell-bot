@@ -42,9 +42,9 @@ def start(update, context):
     )
 
 
-def error(update, context):
+def error(update, error):
     """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
+    logger.warning('Update "%s" caused error "%s"', update, error)
 
 
 def __do_exec(cmd, update, context, cwd=None):
@@ -120,6 +120,7 @@ def do_exec(update, context):
 
 @restricted
 def do_pwd(update, context):
+    xx
     __do_exec('pwd', update, context)
 
 
