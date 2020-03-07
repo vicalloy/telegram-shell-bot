@@ -202,7 +202,7 @@ def main():
     dp.add_handler(CommandHandler("kill", do_kill, pass_args=True))
     dp.add_handler(CommandHandler("pwd", do_pwd))
     dp.add_handler(CommandHandler("ls", do_ls))
-    dp.add_handler(MessageHandler(Filters.text, do_exec, pass_user_data=True))
+    dp.add_handler(MessageHandler(Filters.text, do_exec))
 
     dp.add_error_handler(error)
     updater.start_polling()
