@@ -40,7 +40,7 @@ python bot.py
 1. `/kill` kill running task
 1. `/sudo_login` call sudo
 1. `/script` run scripts in ./scripts directory
-1. The bot send first 3sec output for every command, you can add `out-all` in command to send all output. ex:
+1. The bot send first 3sec output for every command, you can add `oa` in command to send all output. ex:
         
-        out-all;ping google.com
-        /script out-all;demo.py
+        oa;ping google.com
+        /script oa;demo.py

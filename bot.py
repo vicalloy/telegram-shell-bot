@@ -49,7 +49,7 @@ def error(update, context):
 
 
 def __is_out_all(cmd: str) -> (str, bool):
-    param = 'out-all;'
+    param = 'oa;'
     if cmd.startswith(param):
         return cmd[len(param):], True
     return cmd, False
