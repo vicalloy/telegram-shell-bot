@@ -56,6 +56,7 @@ def __is_out_all(cmd: str) -> (str, bool):
 
 
 def __do_exec(cmd, update, context, is_script=False):
+    reply_text = update.message.reply_text  # to hold func reply_text
     logger.debug('exec command "%s", is_script "%s"', cmd, is_script)
     max_idx = 3
     cmd, is_out_all = __is_out_all(cmd)
@@ -75,7 +76,7 @@ def __do_exec(cmd, update, context, is_script=False):
         out += line
         cost_time = time.time() - start_time
         if cost_time > 1:
-            update.message.reply_text(out[:settings.MAX_TASK_OUTPUT])
+            reply_text(out[:settings.MAX_TASK_OUTPUT])
             idx += 1
             out = ''
             start_time = time.time()
