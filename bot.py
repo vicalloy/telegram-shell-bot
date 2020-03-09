@@ -16,7 +16,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-__tasks = []
+__tasks = set()
 
 
 def restricted(func):
@@ -40,8 +40,6 @@ def start(update, context):
         "/tasks show all running tasks\r\n"
         "/sudo_login call sudo\r\n"
         "/kill kill running task\r\n"
-        "/pwd show current working directory\r\n"
-        "/ls list directory contents"
     )
 
 
@@ -50,10 +48,21 @@ def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
-def __do_exec(cmd, update, context, cwd=None):
+def __is_out_all(cmd: str) -> (str, bool):
+    param = 'out-all;'
+    if cmd.startswith(param):
+        return cmd[len(param):], True
+    return cmd, False
+
+
+def __do_exec(cmd, update, context):
+    max_idx = 3
+    cmd, is_out_all = __is_out_all(cmd)
+    if is_out_all:
+        max_idx = 999999
     if not __check_cmd_chars(cmd):
         return
-    c = delegator.run(cmd, block=False, cwd=cwd)
+    c = delegator.run(cmd, block=False)
     out = ''
     task = (f'{c.pid}', cmd, c)
     __tasks.add(task)
@@ -67,7 +76,7 @@ def __do_exec(cmd, update, context, cwd=None):
             idx += 1
             out = ''
             start_time = time.time()
-        if idx > 3:
+        if idx > max_idx:
             update.message.reply_text(f'Command not finished, you can kill by send /kill {c.pid}')
             break
     c.block()
@@ -118,16 +127,6 @@ def do_exec(update, context):
     if not __check_cmd(cmd):
         return
     __do_exec(cmd, update, context)
-
-
-@restricted
-def do_pwd(update, context):
-    __do_exec('pwd', update, context)
-
-
-@restricted
-def do_ls(update, context):
-    __do_exec('ls', update, context)
 
 
 @restricted
@@ -200,8 +199,6 @@ def main():
     dp.add_handler(CommandHandler("tasks", do_tasks))
     dp.add_handler(CommandHandler("sudo_login", do_sudo_login, pass_args=True))
     dp.add_handler(CommandHandler("kill", do_kill, pass_args=True))
-    dp.add_handler(CommandHandler("pwd", do_pwd))
-    dp.add_handler(CommandHandler("ls", do_ls))
     dp.add_handler(MessageHandler(Filters.text, do_exec))
 
     dp.add_error_handler(error)
