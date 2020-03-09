@@ -55,13 +55,16 @@ def __is_out_all(cmd: str) -> (str, bool):
     return cmd, False
 
 
-def __do_exec(cmd, update, context):
+def __do_exec(cmd, update, context, is_script=False):
+    logger.debug('exec command "%s", is_script "%s"', cmd, is_script)
     max_idx = 3
     cmd, is_out_all = __is_out_all(cmd)
     if is_out_all:
         max_idx = 999999
     if not __check_cmd_chars(cmd):
         return
+    if is_script:
+        cmd = os.path.join(settings.SCRIPTS_ROOT_PATH, cmd)
     c = delegator.run(cmd, block=False)
     out = ''
     task = (f'{c.pid}', cmd, c)
@@ -142,9 +145,8 @@ def do_tasks(update, context):
 def do_script(update, context):
     args = context.args.copy()
     if args:
-        args[0] = os.path.join(settings.SCRIPTS_ROOT_PATH, args[0])
         cmd = ' '.join(args)
-        __do_exec(cmd, update, context)
+        __do_exec(cmd, update, context, is_script=True)
         return
     scripts = '\r\n'.join(
         os.path.join(r[len(settings.SCRIPTS_ROOT_PATH):], file)
@@ -203,6 +205,7 @@ def main():
 
     dp.add_error_handler(error)
     updater.start_polling()
+    logger.info('Telegram shell bot started.')
     updater.idle()
 
 

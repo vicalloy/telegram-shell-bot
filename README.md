@@ -36,9 +36,11 @@ python bot.py
 ## Usage
 
 1. Take to bot, every input will tread as a shell command.
-1. `/pwd` show current working directory
-1. `/ls` list directory contents
 1. `/tasks` show all running tasks
 1. `/kill` kill running task
 1. `/sudo_login` call sudo
 1. `/script` run scripts in ./scripts directory
+1. The bot send first 3sec output for every command, you can add `out-all` in command to send all output. ex:
+        
+        out-all;ping google.com
+        /script out-all;demo.py
