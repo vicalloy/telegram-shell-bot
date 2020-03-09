@@ -66,7 +66,7 @@ def __do_exec(cmd, update, context, is_script=False):
         return
     if is_script:
         cmd = os.path.join(settings.SCRIPTS_ROOT_PATH, cmd)
-    c = delegator.run(cmd, block=False)
+    c = delegator.run(cmd, block=False, timeout=-1)
     out = ''
     task = (f'{c.pid}', cmd, c)
     __tasks.add(task)
