@@ -12,6 +12,23 @@ CMD_BLACK_CHARS = {';', '\n'}
 MAX_TASK_OUTPUT = int(os.environ.get("MAX_TASK_OUTPUT", 500))
 
 PROXY_URL = os.environ.get("ALL_PROXY", '')
+
+SC_MENU_ITEM_ROWS = (
+    (
+        ('pwd', 'pwd'),  # display name, command, is script
+        ('ls', 'ls'),
+        ('ls -lh', 'ls -lh'),
+    ),
+    (
+        ('ls -lha', 'ls -lha'),
+        ('Demo Script', 'demo.py', True),
+    ),
+)
+
+SC_MENU_ITEM_CMDS = set()
+for row in SC_MENU_ITEM_ROWS:
+    SC_MENU_ITEM_CMDS.update({e[1] for e in row})
+
 REQUEST_KWARGS = {
     'proxy_url': PROXY_URL
 }

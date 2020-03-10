@@ -4,7 +4,9 @@ import time
 from functools import wraps
 
 import delegator
-from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import (CallbackQueryHandler, CommandHandler, Filters,
+                          MessageHandler, Updater)
 from telegram.ext.dispatcher import run_async
 
 import settings
@@ -32,15 +34,20 @@ def restricted(func):
 
 @restricted
 def start(update, context):
-    """Send a message when the command /help is issued."""
-    update.message.reply_text(
-        "Any input text will call as shell commend.\r\n"
-        "Support command:\r\n"
-        "/script run scripts in ./scripts directory\r\n"
-        "/tasks show all running tasks\r\n"
-        "/sudo_login call sudo\r\n"
-        "/kill kill running task\r\n"
-    )
+    def to_buttons(cmd_row):
+        return [InlineKeyboardButton(e[0], callback_data=e[1]) for e in cmd_row]
+    keyboard = [
+        to_buttons(row) for row in settings.SC_MENU_ITEM_ROWS
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    msg = ("Any input text will call as shell commend.\r\n"
+           "Support command:\r\n"
+           "/script run scripts in ./scripts directory\r\n"
+           "/tasks show all running tasks\r\n"
+           "/sudo_login call sudo\r\n"
+           "/kill kill running task\r\n"
+           "Shortcut:")
+    update.message.reply_text(msg, reply_markup=reply_markup)
 
 
 def error(update, context):
@@ -55,23 +62,35 @@ def __is_out_all(cmd: str) -> (str, bool):
     return cmd, False
 
 
+@run_async
 def __do_exec(cmd, update, context, is_script=False):
-    reply_text = update.message.reply_text  # to hold func reply_text
+    message = update.message or update.callback_query.message
+    reply_text = message.reply_text  # to hold func reply_text
     logger.debug('exec command "%s", is_script "%s"', cmd, is_script)
+
     max_idx = 3
     cmd, is_out_all = __is_out_all(cmd)
     if is_out_all:
         max_idx = 999999
+
     if not __check_cmd_chars(cmd):
+        reply_text(f'This cmd is illegal.')
         return
+
     if is_script:
         cmd = os.path.join(settings.SCRIPTS_ROOT_PATH, cmd)
-    c = delegator.run(cmd, block=False, timeout=1e6)
+
+    try:
+        c = delegator.run(cmd, block=False, timeout=1e6)
+    except FileNotFoundError as e:
+        reply_text(f"{e}")
+        return
     out = ''
     task = (f'{c.pid}', cmd, c)
     __tasks.add(task)
     start_time = time.time()
     idx = 0
+
     for line in c.subprocess:
         out += line
         cost_time = time.time() - start_time
@@ -81,14 +100,15 @@ def __do_exec(cmd, update, context, is_script=False):
             out = ''
             start_time = time.time()
         if idx > max_idx:
-            update.message.reply_text(f'Command not finished, you can kill by send /kill {c.pid}')
+            reply_text(f'Command not finished, you can kill by send /kill {c.pid}')
             break
     c.block()
+
     __tasks.remove(task)
     if out:
-        update.message.reply_text(out[:settings.MAX_TASK_OUTPUT])
+        reply_text(out[:settings.MAX_TASK_OUTPUT])
     if idx > 3:
-        update.message.reply_text(f'Task finished: {cmd}')
+        reply_text(f'Task finished: {cmd}')
 
 
 def __do_cd(update, context):
@@ -120,7 +140,6 @@ def __check_cmd_chars(cmd: str):
     return True
 
 
-@run_async
 @restricted
 def do_exec(update, context):
     if not update.message:
@@ -141,7 +160,6 @@ def do_tasks(update, context):
     update.message.reply_text(msg)
 
 
-@run_async
 @restricted
 def do_script(update, context):
     args = context.args.copy()
@@ -187,6 +205,18 @@ def do_sudo_login(update, context):
     update.message.reply_text(f'sudo failed.')
 
 
+@restricted
+def shortcut_cb(update, context):
+    query = update.callback_query
+    cmd = query.data
+    # TODO
+    if cmd not in settings.SC_MENU_ITEM_CMDS.keys():
+        update.callback_query.message.reply_text(f'This cmd is illegal.')
+    cmd_info = settings.SC_MENU_ITEM_CMDS[cmd]
+    is_script = cmd_info[2] if len(cmd_info) >= 3 else False
+    __do_exec(cmd, update, context, is_script=is_script)
+
+
 def main():
     updater = Updater(
         settings.TOKEN, use_context=True,
@@ -202,6 +232,7 @@ def main():
     dp.add_handler(CommandHandler("tasks", do_tasks))
     dp.add_handler(CommandHandler("sudo_login", do_sudo_login, pass_args=True))
     dp.add_handler(CommandHandler("kill", do_kill, pass_args=True))
+    dp.add_handler(CallbackQueryHandler(shortcut_cb))
     dp.add_handler(MessageHandler(Filters.text, do_exec))
 
     dp.add_error_handler(error)
