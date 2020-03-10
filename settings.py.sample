@@ -25,9 +25,10 @@ SC_MENU_ITEM_ROWS = (
     ),
 )
 
-SC_MENU_ITEM_CMDS = set()
+SC_MENU_ITEM_CMDS = {}
 for row in SC_MENU_ITEM_ROWS:
-    SC_MENU_ITEM_CMDS.update({e[1] for e in row})
+    for cmd in row:
+        SC_MENU_ITEM_CMDS[cmd[1]] = cmd
 
 REQUEST_KWARGS = {
     'proxy_url': PROXY_URL
