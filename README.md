@@ -21,6 +21,7 @@ This is a [Telegram](http://telegram.org) Bot to run shell commands.
     - `CMD_BLACK_CHARS` Ignore command contain char in `CMD_BLACK_LIST`.
     - `PROXY_URL` Proxy url.
     - `SC_MENU_ITEM_ROWS` Command shortcut config.
+    - `ONLY_SHORTCUT_CMD` Run command by shortcut menu, other command will ignore.
 
 1. Create a virtual environment and install required packages
         

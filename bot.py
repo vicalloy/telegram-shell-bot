@@ -227,13 +227,15 @@ def main():
 
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", start))
-
-    dp.add_handler(CommandHandler("script", do_script, pass_args=True))
-    dp.add_handler(CommandHandler("tasks", do_tasks))
-    dp.add_handler(CommandHandler("sudo_login", do_sudo_login, pass_args=True))
-    dp.add_handler(CommandHandler("kill", do_kill, pass_args=True))
     dp.add_handler(CallbackQueryHandler(shortcut_cb))
-    dp.add_handler(MessageHandler(Filters.text, do_exec))
+
+    dp.add_handler(CommandHandler("tasks", do_tasks))
+    dp.add_handler(CommandHandler("kill", do_kill, pass_args=True))
+
+    if not settings.ONLY_SHORTCUT_CMD:
+        dp.add_handler(CommandHandler("sudo_login", do_sudo_login, pass_args=True))
+        dp.add_handler(CommandHandler("script", do_script, pass_args=True))
+        dp.add_handler(MessageHandler(Filters.text, do_exec))
 
     dp.add_error_handler(error)
     updater.start_polling()
