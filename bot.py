@@ -63,7 +63,7 @@ def __is_out_all(cmd: str) -> (str, bool):
 
 
 @run_async
-def __do_exec(cmd, update, context, is_script=False):
+def __do_exec(cmd, update, context, is_script=False, need_filter_cmd=True):
     message = update.message or update.callback_query.message
     reply_text = message.reply_text  # to hold func reply_text
     logger.debug('exec command "%s", is_script "%s"', cmd, is_script)
@@ -73,7 +73,7 @@ def __do_exec(cmd, update, context, is_script=False):
     if is_out_all:
         max_idx = 999999
 
-    if not __check_cmd_chars(cmd):
+    if need_filter_cmd and not __check_cmd_chars(cmd):
         reply_text(f'This cmd is illegal.')
         return
 
@@ -128,6 +128,8 @@ def __check_cmd(cmd: str):
     if cmd.startswith('sudo'):
         cmd = cmd[4:].strip()
     cmd = cmd.split(' ')[0]
+    if settings.CMD_WHITE_LIS and cmd not in settings.CMD_WHITE_LIST:
+        return False
     if cmd in settings.CMD_BLACK_LIST:
         return False
     return True
@@ -209,12 +211,11 @@ def do_sudo_login(update, context):
 def shortcut_cb(update, context):
     query = update.callback_query
     cmd = query.data
-    # TODO
     if cmd not in settings.SC_MENU_ITEM_CMDS.keys():
         update.callback_query.message.reply_text(f'This cmd is illegal.')
     cmd_info = settings.SC_MENU_ITEM_CMDS[cmd]
     is_script = cmd_info[2] if len(cmd_info) >= 3 else False
-    __do_exec(cmd, update, context, is_script=is_script)
+    __do_exec(cmd, update, context, is_script=is_script, need_filter_cmd=False)
 
 
 def main():
