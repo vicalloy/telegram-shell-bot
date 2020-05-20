@@ -2,6 +2,8 @@
 
 This is a [Telegram](http://telegram.org) Bot to run shell commands. 
 
+![](screenshot/main.jpeg)
+
 ## Requirments
 
 - Python 3.6+
