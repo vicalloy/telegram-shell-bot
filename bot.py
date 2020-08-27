@@ -40,12 +40,12 @@ def start(update, context):
         to_buttons(row) for row in settings.SC_MENU_ITEM_ROWS
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    msg = ("Any input text will call as shell commend.\r\n"
-           "Support command:\r\n"
-           "/script run scripts in ./scripts directory\r\n"
-           "/tasks show all running tasks\r\n"
-           "/sudo_login call sudo\r\n"
-           "/kill kill running task\r\n"
+    msg = ("Any inputs will be called as a shell command.\r\n"
+           "Supported commands:\r\n"
+           "/script to run scripts in ./scripts directory\r\n"
+           "/tasks to show all running tasks\r\n"
+           "/sudo_login to call sudo\r\n"
+           "/kill to kill a running task\r\n"
            "Shortcut:")
     update.message.reply_text(msg, reply_markup=reply_markup)
 
@@ -100,7 +100,7 @@ def __do_exec(cmd, update, context, is_script=False, need_filter_cmd=True):
             out = ''
             start_time = time.time()
         if idx > max_idx:
-            reply_text(f'Command not finished, you can kill by send /kill {c.pid}')
+            reply_text(f'Command not finished. You can kill it by sending /kill {c.pid}')
             break
     c.block()
 
@@ -203,7 +203,7 @@ def do_sudo_login(update, context):
     c = delegator.chain(f'echo "{password}" | sudo -S xxxvvv')
     out = c.out
     if 'xxxvvv: command not found' in out:
-        update.message.reply_text(f'sudo successed.')
+        update.message.reply_text(f'sudo succeeded.')
     update.message.reply_text(f'sudo failed.')
 
 
