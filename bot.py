@@ -128,7 +128,7 @@ def __check_cmd(cmd: str):
     if cmd.startswith('sudo'):
         cmd = cmd[4:].strip()
     cmd = cmd.split(' ')[0]
-    if settings.CMD_WHITE_LIS and cmd not in settings.CMD_WHITE_LIST:
+    if settings.CMD_WHITE_LIST and cmd not in settings.CMD_WHITE_LIST:
         return False
     if cmd in settings.CMD_BLACK_LIST:
         return False
