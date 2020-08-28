@@ -23,7 +23,7 @@ This is a [Telegram](http://telegram.org) Bot to run shell commands.
     - `CMD_BLACK_CHARS` Ignore command contain char in `CMD_BLACK_LIST`.
     - `PROXY_URL` Proxy url.
     - `SC_MENU_ITEM_ROWS` Command shortcut config.
-    - `ONLY_SHORTCUT_CMD` Run command by shortcut menu, other command will ignore.
+    - `ONLY_SHORTCUT_CMD` Run command by shortcut menu only. Other commands will be ignored.
 
 1. Create a virtual environment and install required packages
         
@@ -40,12 +40,12 @@ python bot.py
 
 ## Usage
 
-1. Take to bot, every input will tread as a shell command.
-1. `/tasks` show all running tasks
-1. `/kill` kill running task
-1. `/sudo_login` call sudo
-1. `/script` run scripts in ./scripts directory
-1. The bot send first 3sec output for every command, you can add `oa` in command to send all output. ex:
+1. Talk to the bot. Every message will be treated as a shell command.
+1. `/tasks` to show all running tasks
+1. `/kill` to kill a running task
+1. `/sudo_login` to call sudo
+1. `/script` to run scripts in ./scripts directory
+1. The bot sends first 3sec's output for every command. You can add `oa` in command to send all output. E.g.:
         
         oa;ping google.com
         /script oa;demo.py
