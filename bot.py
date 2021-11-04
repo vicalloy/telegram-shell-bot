@@ -4,16 +4,21 @@ import time
 from functools import wraps
 
 import delegator
+import settings
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import (CallbackQueryHandler, CommandHandler, Filters,
-                          MessageHandler, Updater)
+from telegram.ext import (
+    CallbackQueryHandler,
+    CommandHandler,
+    Filters,
+    MessageHandler,
+    Updater,
+)
 from telegram.ext.dispatcher import run_async
 
-import settings
-
 # Enable logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +34,7 @@ def restricted(func):
             print(f"Unauthorized access denied for {user_id}.")
             return
         return func(update, context, *args, **kwargs)
+
     return wrapped
 
 
@@ -36,17 +42,18 @@ def restricted(func):
 def start(update, context):
     def to_buttons(cmd_row):
         return [InlineKeyboardButton(e[0], callback_data=e[1]) for e in cmd_row]
-    keyboard = [
-        to_buttons(row) for row in settings.SC_MENU_ITEM_ROWS
-    ]
+
+    keyboard = [to_buttons(row) for row in settings.SC_MENU_ITEM_ROWS]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    msg = ("Any inputs will be called as a shell command.\r\n"
-           "Supported commands:\r\n"
-           "/script to run scripts in ./scripts directory\r\n"
-           "/tasks to show all running tasks\r\n"
-           "/sudo_login to call sudo\r\n"
-           "/kill to kill a running task\r\n"
-           "Shortcut:")
+    msg = (
+        "Any inputs will be called as a shell command.\r\n"
+        "Supported commands:\r\n"
+        "/script to run scripts in ./scripts directory\r\n"
+        "/tasks to show all running tasks\r\n"
+        "/sudo_login to call sudo\r\n"
+        "/kill to kill a running task\r\n"
+        "Shortcut:"
+    )
     update.message.reply_text(msg, reply_markup=reply_markup)
 
 
@@ -56,9 +63,9 @@ def error(update, context):
 
 
 def __is_out_all(cmd: str) -> (str, bool):
-    param = 'oa;'
+    param = "oa;"
     if cmd.startswith(param):
-        return cmd[len(param):], True
+        return cmd[len(param) :], True
     return cmd, False
 
 
@@ -74,7 +81,7 @@ def __do_exec(cmd, update, context, is_script=False, need_filter_cmd=True):
         max_idx = 999999
 
     if need_filter_cmd and not __check_cmd_chars(cmd):
-        reply_text(f'This cmd is illegal.')
+        reply_text("This cmd is illegal.")
         return
 
     if is_script:
@@ -85,8 +92,8 @@ def __do_exec(cmd, update, context, is_script=False, need_filter_cmd=True):
     except FileNotFoundError as e:
         reply_text(f"{e}")
         return
-    out = ''
-    task = (f'{c.pid}', cmd, c)
+    out = ""
+    task = (f"{c.pid}", cmd, c)
     __tasks.add(task)
     start_time = time.time()
     idx = 0
@@ -95,39 +102,41 @@ def __do_exec(cmd, update, context, is_script=False, need_filter_cmd=True):
         out += line
         cost_time = time.time() - start_time
         if cost_time > 1:
-            reply_text(out[:settings.MAX_TASK_OUTPUT])
+            reply_text(out[: settings.MAX_TASK_OUTPUT])
             idx += 1
-            out = ''
+            out = ""
             start_time = time.time()
         if idx > max_idx:
-            reply_text(f'Command not finished. You can kill it by sending /kill {c.pid}')
+            reply_text(
+                f"Command not finished. You can kill it by sending /kill {c.pid}"
+            )
             break
     c.block()
 
     __tasks.remove(task)
     if out:
-        reply_text(out[:settings.MAX_TASK_OUTPUT])
+        reply_text(out[: settings.MAX_TASK_OUTPUT])
     if idx > 3:
-        reply_text(f'Task finished: {cmd}')
+        reply_text(f"Task finished: {cmd}")
 
 
 def __do_cd(update, context):
     cmd: str = update.message.text
-    if not cmd.startswith('cd '):
+    if not cmd.startswith("cd "):
         return False
     try:
         os.chdir(cmd[3:])
-        update.message.reply_text(f'pwd: {os.getcwd()}')
+        update.message.reply_text(f"pwd: {os.getcwd()}")
     except FileNotFoundError as e:
-        update.message.reply_text(f'{e}')
+        update.message.reply_text(f"{e}")
     return True
 
 
 def __check_cmd(cmd: str):
     cmd = cmd.lower()
-    if cmd.startswith('sudo'):
+    if cmd.startswith("sudo"):
         cmd = cmd[4:].strip()
-    cmd = cmd.split(' ')[0]
+    cmd = cmd.split(" ")[0]
     if settings.CMD_WHITE_LIST and cmd not in settings.CMD_WHITE_LIST:
         return False
     if cmd in settings.CMD_BLACK_LIST:
@@ -156,7 +165,7 @@ def do_exec(update, context):
 
 @restricted
 def do_tasks(update, context):
-    msg = '\r\n'.join([', '.join(e[:2]) for e in __tasks])
+    msg = "\r\n".join([", ".join(e[:2]) for e in __tasks])
     if not msg:
         msg = "Task list is empty"
     update.message.reply_text(msg)
@@ -166,12 +175,13 @@ def do_tasks(update, context):
 def do_script(update, context):
     args = context.args.copy()
     if args:
-        cmd = ' '.join(args)
+        cmd = " ".join(args)
         __do_exec(cmd, update, context, is_script=True)
         return
-    scripts = '\r\n'.join(
-        os.path.join(r[len(settings.SCRIPTS_ROOT_PATH):], file)
-        for r, d, f in os.walk(settings.SCRIPTS_ROOT_PATH) for file in f
+    scripts = "\r\n".join(
+        os.path.join(r[len(settings.SCRIPTS_ROOT_PATH) :], file)
+        for r, d, f in os.walk(settings.SCRIPTS_ROOT_PATH)
+        for file in f
     )
     msg = "Usage: /script script_name args\r\n"
     msg += scripts
@@ -181,14 +191,14 @@ def do_script(update, context):
 @restricted
 def do_kill(update, context):
     if not context.args:
-        update.message.reply_text('Usage: /kill pid')
+        update.message.reply_text("Usage: /kill pid")
         return
 
     pid = context.args[0]
     for task in __tasks:
         if task[0] == pid:
             task[2].kill()
-            update.message.reply_text(f'killed: {task[1]}')
+            update.message.reply_text(f"killed: {task[1]}")
             return
     update.message.reply_text(f'pid "{pid}" not find')
 
@@ -196,15 +206,15 @@ def do_kill(update, context):
 @restricted
 def do_sudo_login(update, context):
     if not context.args:
-        update.message.reply_text('Usage: /sudo_login password')
+        update.message.reply_text("Usage: /sudo_login password")
         return
 
     password = context.args[0]
     c = delegator.chain(f'echo "{password}" | sudo -S xxxvvv')
     out = c.out
-    if 'xxxvvv: command not found' in out:
-        update.message.reply_text(f'sudo succeeded.')
-    update.message.reply_text(f'sudo failed.')
+    if "xxxvvv: command not found" in out:
+        update.message.reply_text("sudo succeeded.")
+    update.message.reply_text("sudo failed.")
 
 
 @restricted
@@ -212,7 +222,7 @@ def shortcut_cb(update, context):
     query = update.callback_query
     cmd = query.data
     if cmd not in settings.SC_MENU_ITEM_CMDS.keys():
-        update.callback_query.message.reply_text(f'This cmd is illegal.')
+        update.callback_query.message.reply_text("This cmd is illegal.")
     cmd_info = settings.SC_MENU_ITEM_CMDS[cmd]
     is_script = cmd_info[2] if len(cmd_info) >= 3 else False
     __do_exec(cmd, update, context, is_script=is_script, need_filter_cmd=False)
@@ -220,8 +230,7 @@ def shortcut_cb(update, context):
 
 def main():
     updater = Updater(
-        settings.TOKEN, use_context=True,
-        request_kwargs=settings.REQUEST_KWARGS
+        settings.TOKEN, use_context=True, request_kwargs=settings.REQUEST_KWARGS
     )
 
     dp = updater.dispatcher
@@ -240,9 +249,9 @@ def main():
 
     dp.add_error_handler(error)
     updater.start_polling()
-    logger.info('Telegram shell bot started.')
+    logger.info("Telegram shell bot started.")
     updater.idle()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
