@@ -7,5 +7,15 @@ pyenv:
 	pipenv install -d --skip-lock
 	pipenv shell
 
+pre-commit-init:
+	pre-commit install
+	pre-commit run --all-files
+
 isort:
 	isort --recursive ./
+
+flake8:
+	flake8 ./
+
+black:
+	black ./
