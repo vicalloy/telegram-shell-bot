@@ -12,7 +12,7 @@ pre-commit-init:
 	pre-commit run --all-files
 
 isort:
-	isort --recursive ./
+	isort ./
 
 flake8:
 	flake8 ./
