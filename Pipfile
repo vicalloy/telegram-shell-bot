@@ -3,10 +3,16 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-isort = "*"
-
 [packages]
 python-telegram-bot = "*"
 delegator-py = "*"
 pysocks = "*"
+
+[dev-packages]
+isort = "*"
+flake8 = "*"
+pre-commit = "*"
+black = "21.10b0"
+
+[pipenv]
+allow_prereleases = true
