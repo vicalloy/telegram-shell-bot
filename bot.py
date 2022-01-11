@@ -4,7 +4,6 @@ import time
 from functools import wraps
 
 import delegator
-import settings
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     CallbackQueryHandler,
@@ -13,6 +12,8 @@ from telegram.ext import (
     MessageHandler,
     Updater,
 )
+
+import settings
 
 # Enable logging
 logging.basicConfig(
@@ -242,11 +243,23 @@ def main():
 
     if not settings.ONLY_SHORTCUT_CMD:
         dp.add_handler(CommandHandler("sudo_login", do_sudo_login, pass_args=True))
-        dp.add_handler(CommandHandler("script", do_script, pass_args=True, run_async=True))
+        dp.add_handler(
+            CommandHandler("script", do_script, pass_args=True, run_async=True)
+        )
         dp.add_handler(MessageHandler(Filters.text, do_exec, run_async=True))
 
     dp.add_error_handler(error)
-    updater.start_polling()
+    if settings.IS_HEROKU:
+        updater.start_webhook(
+            listen="0.0.0.0",
+            port=settings.PORT,
+            url_path=settings.TOKEN,
+            webhook_url="https://{}.herokuapp.com/{}".format(
+                settings.HEROKU_APP_NAME, settings.TOKEN
+            ),
+        )
+    else:
+        updater.start_polling()
     logger.info("Telegram shell bot started.")
     updater.idle()
 
