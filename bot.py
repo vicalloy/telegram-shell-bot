@@ -70,8 +70,12 @@ def __is_out_all(cmd: str) -> (str, bool):
 
 
 def __do_exec(cmd, update, context, is_script=False, need_filter_cmd=True):
+    def reply_text(msg: str, *args, **kwargs):
+        if not msg.strip():  # ignore empty message
+            return
+        message.reply_text(msg, *args, **kwargs)
+
     message = update.message or update.callback_query.message
-    reply_text = message.reply_text  # to hold func reply_text
     logger.debug('exec command "%s", is_script "%s"', cmd, is_script)
 
     max_idx = 3
