@@ -26,11 +26,22 @@ logger = logging.getLogger(__name__)
 __tasks = set()
 
 
+def validate_settings():
+    if -999999 not in settings.ENABLED_USERS:
+        return
+    if not (settings.CMD_WHITE_LIST or settings.ONLY_SHORTCUT_CMD):
+        raise Exception(
+            "It a public bot. "
+            "Public bot is not safe, dont's use root to run this bot. "
+            "You must add settings `CMD_WHITE_LIST` or `ONLY_SHORTCUT_CMD=True` for a public bot"
+        )
+
+
 def restricted(func):
     @wraps(func)
     def wrapped(update, context, *args, **kwargs):
         user_id = update.effective_user.id
-        if user_id not in settings.ENABLED_USERS:
+        if not (user_id in settings.ENABLED_USERS or -999999 in settings.ENABLED_USERS):
             print(f"Unauthorized access denied for {user_id}.")
             return
         return func(update, context, *args, **kwargs)
@@ -269,4 +280,5 @@ def main():
 
 
 if __name__ == "__main__":
+    validate_settings()
     main()
