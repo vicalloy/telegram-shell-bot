@@ -5,6 +5,7 @@ from functools import wraps
 
 import delegator
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import constants
 from telegram.ext import (
     CallbackQueryHandler,
     CommandHandler,
@@ -73,7 +74,7 @@ def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
-def __is_out_all(cmd: str) -> (str, bool):
+def __is_out_all(cmd: str) -> tuple[str, bool]:
     param = "oa;"
     if cmd.startswith(param):
         return cmd[len(param) :], True
@@ -84,7 +85,9 @@ def __do_exec(cmd, update, context, is_script=False, need_filter_cmd=True):
     def reply_text(msg: str, *args, **kwargs):
         if not msg.strip():  # ignore empty message
             return
-        message.reply_text(msg, *args, **kwargs)
+        while msg:
+            message.reply_text(msg[:constants.MAX_MESSAGE_LENGTH], *args, **kwargs)
+            msg = msg[constants.MAX_MESSAGE_LENGTH:]
 
     message = update.message or update.callback_query.message
     logger.debug('exec command "%s", is_script "%s"', cmd, is_script)
