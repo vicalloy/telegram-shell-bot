@@ -85,9 +85,11 @@ def __do_exec(cmd, update, context, is_script=False, need_filter_cmd=True):
     def reply_text(msg: str, *args, **kwargs):
         if not msg.strip():  # ignore empty message
             return
+        # python len() is by char, MAX_MESSAGE_LENGTH is bytes
+        max_length = constants.MAX_MESSAGE_LENGTH // 2 
         while msg:
-            message.reply_text(msg[:constants.MAX_MESSAGE_LENGTH], *args, **kwargs)
-            msg = msg[constants.MAX_MESSAGE_LENGTH:]
+            message.reply_text(msg[:max_length], *args, **kwargs)
+            msg = msg[max_length:]
 
     message = update.message or update.callback_query.message
     logger.debug('exec command "%s", is_script "%s"', cmd, is_script)
