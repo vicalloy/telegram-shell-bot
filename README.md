@@ -7,7 +7,7 @@ This is a [Telegram](http://telegram.org) Bot to run shell commands.
 
 ## Requirments
 
-- Python 3.10+
+- Python 3.8+
 - Poetry
 
 ## Install
