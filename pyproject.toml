@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "telegram-shell-bot"
+version = "1.0.1"
+description = "A telegram bot to run shell commands"
+authors = ["vicalloy <zbirder@gmail.com>"]
+license = "BSD"
+readme = "README.md"
+packages = [{include = "telegram_shell_bot"}]
+
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+target-version = ['py310']
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+known_first_party = []
+skip_gitignore = true
+
+[tool.poetry.dependencies]
+python = "^3.8"
+python-telegram-bot = "^13.14"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.20.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -2,4 +2,3 @@ apps:
     script: '/bin/sh'
     name: 'telegram-shell-bot'
     args:  ['-c', 'pipenv run python -m bot']
-

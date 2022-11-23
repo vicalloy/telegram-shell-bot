@@ -7,8 +7,8 @@ This is a [Telegram](http://telegram.org) Bot to run shell commands.
 
 ## Requirments
 
-- Python 3.6+
-- Pipenv
+- Python 3.10+
+- Poetry
 
 ## Install
 1. Create a bot and get token from [BotFather bot](https://telegram.me/BotFather)
@@ -29,14 +29,13 @@ This is a [Telegram](http://telegram.org) Bot to run shell commands.
 
 1. Create a virtual environment and install required packages
 
-        pipenv --python 3
-        pipenv install -d --skip-lock
-        pipenv shell
+        poetry install --only main
+        poetry shell
 
 ## Run
 
 ```
-pipenv shell
+poetry shell
 python bot.py
 ```
 
@@ -65,4 +64,3 @@ pm2 startup # for autostart on bot
 
         oa;ping google.com
         /script oa;demo.py
-

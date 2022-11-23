@@ -4,8 +4,7 @@ import time
 from functools import wraps
 
 import delegator
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram import constants
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, constants
 from telegram.ext import (
     CallbackQueryHandler,
     CommandHandler,
@@ -34,7 +33,8 @@ def validate_settings():
         raise Exception(
             "It a public bot. "
             "Public bot is not safe, dont's use root to run this bot. "
-            "You must add settings `CMD_WHITE_LIST` or `ONLY_SHORTCUT_CMD=True` for a public bot"
+            "You must add settings `CMD_WHITE_LIST` or "
+            "`ONLY_SHORTCUT_CMD=True` for a public bot"
         )
 
 
@@ -86,7 +86,7 @@ def __do_exec(cmd, update, context, is_script=False, need_filter_cmd=True):
         if not msg.strip():  # ignore empty message
             return
         # python len() is by char, MAX_MESSAGE_LENGTH is bytes
-        max_length = constants.MAX_MESSAGE_LENGTH // 2 
+        max_length = constants.MAX_MESSAGE_LENGTH // 2
         while msg:
             message.reply_text(msg[:max_length], *args, **kwargs)
             msg = msg[max_length:]
@@ -164,10 +164,7 @@ def __check_cmd(cmd: str):
 
 
 def __check_cmd_chars(cmd: str):
-    for char in settings.CMD_BLACK_CHARS:
-        if char in cmd:
-            return False
-    return True
+    return all(char not in cmd for char in settings.CMD_BLACK_CHARS)
 
 
 @restricted

@@ -2,20 +2,9 @@ run:
 	python bot.py
 
 pyenv:
-	#pip install pipenv --upgrade
-	#pipenv --python 3
-	pipenv install -d --skip-lock
-	pipenv shell
+	poetry install
+	poetry shell
 
-pre-commit-init:
+init-pre-commit:
 	pre-commit install
 	pre-commit run --all-files
-
-isort:
-	isort ./
-
-flake8:
-	flake8 ./
-
-black:
-	black ./
