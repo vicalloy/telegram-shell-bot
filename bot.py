@@ -62,6 +62,7 @@ def start(update, context):
         "Supported commands:\r\n"
         "/script to run scripts in ./scripts directory\r\n"
         "/tasks to show all running tasks\r\n"
+        "/download to download file form server\r\n"
         "/sudo_login to call sudo\r\n"
         "/kill to kill a running task\r\n"
         "Shortcut:"
@@ -244,6 +245,20 @@ def shortcut_cb(update, context):
     __do_exec(cmd, update, context, is_script=is_script, need_filter_cmd=False)
 
 
+@restricted
+def download(update, context):
+    args = context.args.copy()
+    if not args:
+        update.message.reply_text("Filename must not be empty")
+        return
+    filename = args[0]
+    try:
+        with open(filename, "rb") as document:
+            update.message.reply_document(document)
+    except (FileNotFoundError, IsADirectoryError):
+        update.message.reply_text(f"Can't find `{filename}`.")
+
+
 def main():
     updater = Updater(
         settings.TOKEN, use_context=True, request_kwargs=settings.REQUEST_KWARGS
@@ -254,6 +269,8 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", start))
     dp.add_handler(CallbackQueryHandler(shortcut_cb, run_async=True))
+
+    dp.add_handler(CommandHandler("download", download, pass_args=True, run_async=True))
 
     dp.add_handler(CommandHandler("tasks", do_tasks))
     dp.add_handler(CommandHandler("kill", do_kill, pass_args=True))

@@ -58,6 +58,7 @@ pm2 startup # for autostart on bot
 1. Talk to the bot. Every message will be treated as a shell command.
 1. `/tasks` to show all running tasks
 1. `/kill` to kill a running task
+1. `/download` to download file from server. `ex: /download README.md`
 1. `/sudo_login` to call sudo
 1. `/script` to run scripts in ./scripts directory
 1. The bot sends first 3sec's output for every command. You can add `oa` in command to send all output. E.g.:
