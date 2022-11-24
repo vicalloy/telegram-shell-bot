@@ -1,4 +1,5 @@
 scripts/
+upload/
 *.sqlite3
 vendor/
 *.swp

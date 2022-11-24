@@ -259,6 +259,16 @@ def download(update, context):
         update.message.reply_text(f"Can't find `{filename}`.")
 
 
+@restricted
+def upload(update, context):
+    bot = context.bot
+    file_id = update.message.document.file_id
+    file_name = update.message.document.file_name
+    logger.info(f"upload file: {file_id} {file_name}")
+    bot.get_file(file_id).download(os.path.join(settings.UPLOAD_PATH, file_name))
+    update.message.reply_text(f"uploaded `{file_name}` to server.")
+
+
 def main():
     updater = Updater(
         settings.TOKEN, use_context=True, request_kwargs=settings.REQUEST_KWARGS
@@ -271,6 +281,7 @@ def main():
     dp.add_handler(CallbackQueryHandler(shortcut_cb, run_async=True))
 
     dp.add_handler(CommandHandler("download", download, pass_args=True, run_async=True))
+    updater.dispatcher.add_handler(MessageHandler(Filters.document, upload))
 
     dp.add_handler(CommandHandler("tasks", do_tasks))
     dp.add_handler(CommandHandler("kill", do_kill, pass_args=True))
@@ -299,5 +310,6 @@ def main():
 
 
 if __name__ == "__main__":
+    os.makedirs(settings.UPLOAD_PATH, exist_ok=True)
     validate_settings()
     main()
