@@ -59,13 +59,13 @@ def start(update, context):
     reply_markup = InlineKeyboardMarkup(keyboard)
     msg = (
         "Any inputs will be called as a shell command.\r\n"
+        "Any file send to bot will be uploaded to folder `./upload/`.\r\n"
         "Supported commands:\r\n"
         "/script to run scripts in ./scripts directory\r\n"
         "/tasks to show all running tasks\r\n"
         "/download to download file form server\r\n"
         "/sudo_login to call sudo\r\n"
         "/kill to kill a running task\r\n"
-        "Shortcut:"
     )
     update.message.reply_text(msg, reply_markup=reply_markup)
 
