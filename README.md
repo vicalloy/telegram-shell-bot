@@ -9,6 +9,9 @@ This is a [Telegram](http://telegram.org) Bot to run shell commands.
 
 - Python 3.8+
 - Poetry
+curl -sSL https://install.python-poetry.org | python3 -
+- pm2
+ yarn global add pm2
 
 ## Install
 1. Create a bot and get token from [BotFather bot](https://telegram.me/BotFather)
